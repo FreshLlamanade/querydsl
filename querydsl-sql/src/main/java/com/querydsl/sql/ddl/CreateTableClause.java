@@ -8,6 +8,7 @@ package com.querydsl.sql.ddl;
 import com.querydsl.core.QueryException;
 import com.querydsl.sql.Configuration;
 import com.querydsl.sql.SQLTemplates;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,7 +21,6 @@ import java.util.logging.Logger;
  * CreateTableClause defines a CREATE TABLE clause
  *
  * @author tiwe
- *
  */
 public class CreateTableClause {
 
@@ -145,11 +145,8 @@ public class CreateTableClause {
         return new ForeignKeyBuilder(this, templates, foreignKeys, templates.quoteIdentifier(name), columns);
     }
 
-    /**
-     * Execute the clause
-     */
-    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
-    public void execute() {
+    @VisibleForTesting
+    protected String createSQLStatement() {
         StringBuilder builder = new StringBuilder();
         builder.append(templates.getCreateTable()).append(table).append(" (\n");
         List<String> lines = new ArrayList<>(columns.size() + foreignKeys.size() + 1);
@@ -188,9 +185,18 @@ public class CreateTableClause {
         builder.append("  ").append(String.join(",\n  ", lines));
         builder.append("\n)\n");
         logger.info(builder.toString());
+        return builder.toString();
+    }
 
+    /**
+     * Execute the clause
+     */
+    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
+    public void execute() {
+
+        String createTableSQL = createSQLStatement();
         try (Statement stmt = connection.createStatement()) {
-            stmt.execute(builder.toString());
+            stmt.execute(createTableSQL);
 
             // indexes
             for (IndexData index : indexes) {
@@ -204,9 +210,7 @@ public class CreateTableClause {
                 stmt.execute(sql);
             }
         } catch (SQLException e) {
-            System.err.println(builder);
             throw new QueryException(e.getMessage(), e);
         }
     }
-
 }

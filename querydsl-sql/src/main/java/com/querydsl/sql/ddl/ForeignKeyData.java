@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * ForeignKeyData
+ * 
  * @author tiwe
  *
  */

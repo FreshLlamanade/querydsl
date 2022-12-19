@@ -6,6 +6,8 @@
 package com.querydsl.sql.ddl;
 
 /**
+ * IndexData
+ * 
  * @author tiwe
  *
  */

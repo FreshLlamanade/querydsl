@@ -6,9 +6,10 @@
 package com.querydsl.sql.ddl;
 
 /**
-* @author tiwe
-*
-*/
+ * ColumnData
+ *
+ * @author tiwe
+ */
 public class ColumnData {
 
     private final String name;
